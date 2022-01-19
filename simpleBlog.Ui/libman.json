@@ -1,0 +1,14 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "tinymce@5.10.2",
+      "destination": "wwwroot/tinymce/"
+    },
+    {
+      "library": "bootstrap@4.5.3",
+      "destination": "wwwroot/bootstrap/"
+    }
+  ]
+}
