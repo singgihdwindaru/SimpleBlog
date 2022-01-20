@@ -36,17 +36,6 @@ namespace simpleBlog.Ui.Models
         [Required]
         public string Title { get; set; } = string.Empty;
 
-        [SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "The slug should be lower case.")]
-        public static string CreateSlug(string title)
-        {
-            title = title?.ToLowerInvariant().Replace(
-                Constants.Space, Constants.Dash, StringComparison.OrdinalIgnoreCase) ?? string.Empty;
-            title = RemoveDiacritics(title);
-            title = RemoveReservedUrlCharacters(title);
-
-            return title.ToLowerInvariant();
-        }
-
         public bool AreCommentsOpen(int commentsCloseAfterDays) =>
             this.PubDate.AddDays(commentsCloseAfterDays) >= DateTime.UtcNow;
 
