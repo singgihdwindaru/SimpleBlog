@@ -1,16 +1,28 @@
 ﻿using System.ComponentModel.DataAnnotations;
 namespace simpleBlog.Ui.Models
 {
-    public class LoginViewsModel
+    public class LoginModel
     {
-        [Required]
-        [DataType(DataType.Password)]
-        public string Password { get; set; } = string.Empty;
+        public class Request
+        {
+            [Required]
+            [DataType(DataType.Password)]
+            public string password { get; set; } = string.Empty;
 
-        [Display(Name = "Remember me?")]
-        public bool RememberMe { get; set; } = false;
+            [Display(Name = "Remember me?")]
+            public bool rememberMe { get; set; } = false;
 
-        [Required]
-        public string UserName { get; set; } = string.Empty;
+            [Required]
+            public string username { get; set; } = string.Empty;
+        }
+        public class Response
+        {
+            public string username { get; set; }
+            public string fullname { get; set; }
+            public bool? is_active { get; set; }
+            public string token { get; set; }
+            public string refresh_token { get; set; }
+            public string role { get; set; }
+        }
     }
 }

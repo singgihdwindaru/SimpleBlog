@@ -1,9 +1,13 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using simpleBlog.Ui.Interface;
+using simpleBlog.Ui.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,8 +27,21 @@ namespace simpleBlog.Ui
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
             services.AddRazorPages();
+             services.AddSingleton<IConfigUi, AppSettings>();
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+               .AddCookie(options =>
+               {
+                   options.LoginPath = "/login";
+                   options.AccessDeniedPath = "/error";
+               });
+
+            services.AddAuthorization(options =>
+            {
+                options.DefaultPolicy = new AuthorizationPolicyBuilder()
+                   .RequireAuthenticatedUser()
+                   .Build();
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -40,28 +57,19 @@ namespace simpleBlog.Ui
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
-            app.Use(
-                (context, next) =>
-                {
-                    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
-                    return next();
-                });
-            app.UseStatusCodePagesWithReExecute("/Error");
-
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
-            if (this.Configuration.GetValue<bool>("forcessl"))
-            {
-                app.UseHttpsRedirection();
-            }
-            app.UseAuthentication();
-            app.UseRouting();
 
+            app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
+
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapRazorPages();
+                endpoints.MapControllerRoute(
+                       name: "default",
+                       pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

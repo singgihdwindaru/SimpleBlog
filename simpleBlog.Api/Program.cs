@@ -18,9 +18,15 @@ namespace simpleBlog.Api
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+            .UseWindowsService()
+            .ConfigureWebHost(config =>
+              {
+                  config.UseUrls("http://*:5005");
+ 
+              })
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+            });
     }
 }
