@@ -16,6 +16,8 @@ namespace simpleBlog.Api.DataAccess
             configuration = Configuration;
             connectionString = configuration["ConnectionStrings:connString"];
             dateTimeNow = DateTime.Now.Ticks;
+        }
+
     }
     public interface IConfigApi
     {
