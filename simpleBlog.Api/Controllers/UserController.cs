@@ -26,7 +26,7 @@ namespace simpleBlog.Api.Controllers
     {
         private readonly ILogger<UserModel> _logger;
         private readonly UserService userService;
-        public UserController(ILogger<UserModel> logger, IConfigApi configApi)
+        public UserController(ILogger<UserModel> logger, IAppSettings configApi)
         {
             userService = new UserService(configApi);
             _logger = logger;

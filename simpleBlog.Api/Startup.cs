@@ -10,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Text;
 using simpleBlog.Api.Data;
+using simpleBlog.Api.Interfaces;
 
 namespace simpleBlog.Api
 {
@@ -26,7 +27,7 @@ namespace simpleBlog.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<AppDbContext>();
-            services.AddSingleton<IConfigApi, ConfigurationApi>();
+            services.AddSingleton<IAppSettings, ConfigurationApi>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

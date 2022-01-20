@@ -5,5 +5,7 @@ namespace simpleBlog.Api.Interfaces
     public interface IAppSettings
     {
         string connectionString { get; }
+        long dateTimeNow { get; }
+
     }
 }

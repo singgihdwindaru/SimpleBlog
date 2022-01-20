@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using simpleBlog.Api.DataAccess;
+using simpleBlog.Api.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,8 @@ namespace simpleBlog.Api.Data
 {
     public partial class AppDbContext:DbContext
     {
-        private IConfigApi ConfigApi;
-        public AppDbContext(DbContextOptions<AppDbContext> options, IConfigApi configApi)
+        private IAppSettings ConfigApi;
+        public AppDbContext(DbContextOptions<AppDbContext> options, IAppSettings configApi)
                : base(options)
         {
             ConfigApi = configApi;

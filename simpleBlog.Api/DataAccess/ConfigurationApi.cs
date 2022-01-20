@@ -1,10 +1,11 @@
 using System;
 using System.IO;
 using Microsoft.Extensions.Configuration;
+using simpleBlog.Api.Interfaces;
 
 namespace simpleBlog.Api.DataAccess
 {
-    public class ConfigurationApi : IConfigApi
+    public class ConfigurationApi : IAppSettings
     {
         public string connectionString { get; }
         public long dateTimeNow { get; }
@@ -18,10 +19,5 @@ namespace simpleBlog.Api.DataAccess
             dateTimeNow = DateTime.Now.Ticks;
         }
 
-    }
-    public interface IConfigApi
-    {
-        string connectionString { get; }
-        long dateTimeNow { get; }
     }
 }

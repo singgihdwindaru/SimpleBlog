@@ -9,8 +9,8 @@ namespace simpleBlog.Api.DataAccess
 {
     public class UserDataAccess : IUser
     {
-        private IConfigApi configApi;
-        public UserDataAccess(IConfigApi ConfigApi)
+        private IAppSettings configApi;
+        public UserDataAccess(IAppSettings ConfigApi)
         {
             configApi = ConfigApi;
         }
