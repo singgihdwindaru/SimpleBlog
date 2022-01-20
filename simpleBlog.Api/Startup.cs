@@ -2,7 +2,6 @@ using simpleBlog.Api.DataAccess;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -10,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Text;
+using simpleBlog.Api.Data;
 
 namespace simpleBlog.Api
 {
@@ -25,16 +25,10 @@ namespace simpleBlog.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // services.AddOptions();
-            // services.Configure<ConfigurationApi>(Configuration.GetSection("ConnectionString"));
-
+            services.AddDbContext<AppDbContext>();
             services.AddSingleton<IConfigApi, ConfigurationApi>();
+
             services.AddControllers();
-            // for get appsettings from anywhere
-            // services.AddSwaggerGen(c =>
-            // {
-            //     c.SwaggerDoc("v1", new OpenApiInfo { Title = "simpleBlog.Api", Version = "v1" });
-            // });
             services.AddSwaggerGen(c =>
             {
                c.SwaggerDoc("v1", new OpenApiInfo { Title = "simpleBlog.Api", Version = "v1" });
@@ -86,12 +80,6 @@ namespace simpleBlog.Api
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "simpleBlog.Api v1"));
             }
-
-            // app.UseForwardedHeaders(new ForwardedHeadersOptions
-            // {
-            //     ForwardedHeaders = ForwardedHeaders.XForwardedFor |
-            //     ForwardedHeaders.XForwardedProto
-            // });
 
             app.UseHttpsRedirection();
 
