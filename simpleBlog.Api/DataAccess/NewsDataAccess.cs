@@ -35,11 +35,13 @@ namespace simpleBlog.Api.DataAccess
             switch (enumParam)
             {
                 case EnumParam.byId:
+                    int? artikelId = (int)parameters[0];
+                    newsModels = await getByIdAndName(artikelId);
                     break;
                 case EnumParam.byName:
                     break;
                 case EnumParam.byIdAndName:
-                    await getByIdAndName(newsModels);
+
                     break;
                 default:
                     break;
@@ -47,22 +49,24 @@ namespace simpleBlog.Api.DataAccess
             return newsModels;
         }
 
-        private async Task getByIdAndName(List<NewsModel> newsModels)
+        private async Task<List<NewsModel>> getByIdAndName(int? artikelId)
         {
+            List<NewsModel> newsModels = null;
             try
             {
                 using (NpgsqlConnection pgConn = new NpgsqlConnection(appSettings.connectionString))
                 {
                     await pgConn.OpenAsync();
                     var sql = @"
-                    SELECT ur.id, u.username,u.is_active,r.role_name
-                    from user_roles ur
-                    inner join users u on u.id = ur.user_id
-                    inner join roles r on r.id = ur.role_id
-                    where u.username=@username and u.password=@password";
+                    SELECT ar.id AS artikelId, ar.title, ar.content
+                    , ar.pub_date AS publish_date
+                    , au.id AS reportedId, au.nama as reporterName, ar.status as isPublish, ar.excerpt
+                    , case when ar.updated_date is null then ar.created_date else ar.updated_date end AS lastModified
+                    from artikel ar
+                    inner join author au on ar.author_id = au.id
+                    where ar.id = @artikelId";
                     NpgsqlCommand cmd = new NpgsqlCommand(sql, pgConn);
-                    //cmd.Parameters.AddWithValue("@userName", username);
-                    //cmd.Parameters.AddWithValue("@password", password);
+                    cmd.Parameters.AddWithValue("@artikelId", artikelId);
                     using (NpgsqlDataReader rdr = cmd.ExecuteReader())
                     {
                         if (rdr.HasRows)
@@ -71,13 +75,20 @@ namespace simpleBlog.Api.DataAccess
 
                             while (await rdr.ReadAsync())
                             {
-                                NewsModel data = new NewsModel();
-                                //data.id = rdr.GetGuid(0);
-                                //data.username = rdr.GetString(1);
-                                //data.is_active = rdr.GetBoolean(2);
-                                //data.role = rdr.GetString(3);
+                                NewsModel data = new NewsModel
+                                {
+                                    artikelId = rdr.GetInt32(0),
+                                    title = rdr.GetString(1),
+                                    content = rdr.GetString(2),
+                                    pubDate = rdr.GetDateTime(3),
+                                    reporterId = rdr.GetInt32(4),
+                                    reporterName = rdr.GetString(5),
+                                    isPublished = Convert.ToBoolean(rdr.GetInt32(6)),
+                                    excerpt = rdr.IsDBNull(7) ? string.Empty : rdr.GetString(7),
+                                    lastModified = rdr.IsDBNull(8) ? DateTime.MinValue : rdr.GetDateTime(8)
+                                };
 
-                                //NewsModel.Add(data);
+                                newsModels.Add(data);
                             }
                         }
                     }
@@ -87,6 +98,7 @@ namespace simpleBlog.Api.DataAccess
             {
                 //TODO : Write log
             }
+            return newsModels;
         }
     }
 }

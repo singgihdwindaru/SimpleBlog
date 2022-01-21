@@ -1,6 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using simpleBlog.Api.BusinessLogic;
+using simpleBlog.Api.Interfaces;
+using simpleBlog.Api.Models;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -8,15 +13,42 @@ using System.Threading.Tasks;
 
 namespace simpleBlog.Api.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class NewsController : ControllerBase
     {
+        private readonly NewsBusinessLogic newsService;
+        public NewsController(IAppSettings appSettings)
+        {
+            newsService = new NewsBusinessLogic(appSettings);
+        }
         // GET: api/<NewsController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        [Authorize]
+        public async Task<IActionResult> GetArticleById([FromBody] NewsModel artikel)
         {
-            return new string[] { "value1", "value2" };
+            BaseModel<object> rspList = new BaseModel<object>();
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+                string authHeader = Request.Headers["Authorization"];
+                authHeader = authHeader.Replace("Bearer ", "");
+                var jsonToken = handler.ReadToken(authHeader);
+                var tokenS = handler.ReadToken(authHeader) as JwtSecurityToken;
+                var id = tokenS.Claims.First(claim => claim.Type == "id").Value;
+
+                var data = await newsService.GetDataById(artikel.artikelId);
+                if (data.reporterId.ToString() == id)
+                {
+                    rspList.data = data;
+                }
+            }
+            catch (Exception ex)
+            {
+                rspList.status = StatusEnum.error.ToString();
+                rspList.data = ex.Message;// Here is one return type
+            }
+            return Ok(rspList);
         }
 
         // GET api/<NewsController>/5
@@ -27,10 +59,10 @@ namespace simpleBlog.Api.Controllers
         }
 
         // POST api/<NewsController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
+        // [HttpPost]
+        // public void Post([FromBody] string value)
+        // {
+        // }
 
         // PUT api/<NewsController>/5
         [HttpPut("{id}")]

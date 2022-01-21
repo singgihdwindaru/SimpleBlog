@@ -32,7 +32,7 @@ namespace simpleBlog.Api
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-               c.SwaggerDoc("v1", new OpenApiInfo { Title = "simpleBlog.Api", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "simpleBlog.Api", Version = "v1" });
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     In = ParameterLocation.Header,
@@ -62,13 +62,6 @@ namespace simpleBlog.Api
             }).AddJwtBearer(cfg =>
             {
                 cfg.TokenValidationParameters = TokenValidationParameters;
-            });
-            services.AddAuthorization(cfg =>
-            {
-                cfg.AddPolicy("Admin", policy => policy.RequireClaim("type", "Admin"));
-                cfg.AddPolicy("Agent", policy => policy.RequireClaim("type", "Agent"));
-                cfg.AddPolicy("ClearanceLevel1", policy => policy.RequireClaim("ClearanceLevel", "1", "2"));
-                cfg.AddPolicy("ClearanceLevel2", policy => policy.RequireClaim("ClearanceLevel", "2"));
             });
         }
 
