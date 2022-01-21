@@ -27,8 +27,8 @@ namespace simpleBlog.Ui
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddRazorPages();
-             services.AddSingleton<IConfigUi, AppSettings>();
+            services.AddControllersWithViews().AddRazorRuntimeCompilation();
+            services.AddSingleton<IConfigUi, AppSettings>();
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                .AddCookie(options =>
                {
