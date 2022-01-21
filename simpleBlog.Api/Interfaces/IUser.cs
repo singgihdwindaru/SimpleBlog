@@ -7,8 +7,8 @@ namespace simpleBlog.Api.Interfaces
 {
     public interface IUser
     {
-        Task<List<UserModel.Response>> GetUser(string username, string password);
-        public bool Insert(UserModel.Response userModel);
-        public bool Update(UserModel.Response userModel);
+        Task<List<UserModel.Response>> GetUserAsync(string username, string password);
+        Task<bool> InsertAsync(UserModel.Response userModel);
+        Task<bool> UpdateAsync(UserModel.Response userModel);
     }
 }

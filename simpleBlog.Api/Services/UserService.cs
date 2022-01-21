@@ -19,9 +19,9 @@ namespace simpleBlog.Api.Services
         {
             return await userBusinessLogic.Authenticate(username, password);
         }
-        public bool TokenSource(UserModel.Response userModel)
+        public async Task<bool> TokenSource(UserModel.Response userModel)
         {
-            return userBusinessLogic.InsertRequesterToken(userModel);
+            return await userBusinessLogic.InsertRequesterTokenAsync(userModel);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace simpleBlog.Api.DataAccess
         {
             configApi = ConfigApi;
         }
-        public async Task<List<UserModel.Response>> GetUser(string username, string password)
+        public async Task<List<UserModel.Response>> GetUserAsync(string username, string password)
         {
             List<UserModel.Response> userModel = null;
             try
@@ -59,8 +59,9 @@ namespace simpleBlog.Api.DataAccess
             return userModel;
         }
 
-        public bool Insert(UserModel.Response userModel)
+        public async Task<bool> InsertAsync(UserModel.Response userModel)
         {
+            await Task.Yield();
             bool result = false;
             // using (NpgsqlConnection pgConn = new NpgsqlConnection(configApi.connectionString))
             // {
@@ -73,9 +74,10 @@ namespace simpleBlog.Api.DataAccess
             return result;
         }
 
-        public bool Update(UserModel.Response userModel)
+        public async Task<bool> UpdateAsync(UserModel.Response userModel)
         {
-            throw new NotImplementedException();
+            await Task.Yield();
+            return true;
         }
     }
 }
