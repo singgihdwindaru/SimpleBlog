@@ -9,45 +9,46 @@ namespace simpleBlog.Ui.Models
 {
     public class Post
     {
-        public IList<string> Categories { get; } = new List<string>();
+        public string id { get; set; } //= DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture);
+       
+        public string reporterId { get; set; } = string.Empty;
+        public IList<string> categories { get; } = new List<string>();
 
-        public IList<string> Tags { get; } = new List<string>();
+        public IList<string> tags { get; } = new List<string>();
 
-        public IList<Comment> Comments { get; } = new List<Comment>();
-
-        [Required]
-        public string Content { get; set; } = string.Empty;
-
-        [Required]
-        public string Excerpt { get; set; } = string.Empty;
+        public IList<Comment> comments { get; } = new List<Comment>();
 
         [Required]
-        public string ID { get; set; } = DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture);
+        public string content { get; set; } = string.Empty;
 
-        public bool IsPublished { get; set; } = true;
+        [Required]
+        public string excerpt { get; set; } = string.Empty;
 
-        public DateTime LastModified { get; set; } = DateTime.UtcNow;
 
-        public DateTime PubDate { get; set; } = DateTime.UtcNow;
+        public bool isPublished { get; set; } = true;
+
+        public DateTime lastModified { get; set; } = DateTime.UtcNow;
+
+        public DateTime pubDate { get; set; } = DateTime.UtcNow;
 
         [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string Slug { get; set; } = string.Empty;
 
         [Required]
-        public string Title { get; set; } = string.Empty;
+        public string title { get; set; } = string.Empty;
 
         public bool AreCommentsOpen(int commentsCloseAfterDays) =>
-            this.PubDate.AddDays(commentsCloseAfterDays) >= DateTime.UtcNow;
+            this.pubDate.AddDays(commentsCloseAfterDays) >= DateTime.UtcNow;
 
-        public string GetEncodedLink() => $"/blog/{System.Net.WebUtility.UrlEncode(this.Slug)}/";
+        public string getEncodedLink() => $"/news/{System.Net.WebUtility.UrlEncode(this.Slug)}/";
 
-        public string GetLink() => $"/blog/{this.Slug}/";
+        public string getLink() => $"/news/{this.Slug}/";
 
-        public bool IsVisible() => this.PubDate <= DateTime.UtcNow && this.IsPublished;
+        public bool isVisible() => this.pubDate <= DateTime.UtcNow && this.isPublished;
 
-        public string RenderContent()
+        public string renderContent()
         {
-            var result = this.Content;
+            var result = this.content;
 
             // Set up lazy loading of images/iframes
             if (!string.IsNullOrEmpty(result))

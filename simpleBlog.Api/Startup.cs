@@ -10,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Text;
 using simpleBlog.Api.Data;
+using simpleBlog.Api.Interfaces;
 
 namespace simpleBlog.Api
 {
@@ -24,14 +25,15 @@ namespace simpleBlog.Api
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {
+        {   
+            services.AddMvc().AddXmlSerializerFormatters();  
             services.AddDbContext<AppDbContext>();
-            services.AddSingleton<IConfigApi, ConfigurationApi>();
+            services.AddSingleton<IAppSettings, ConfigurationApi>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-               c.SwaggerDoc("v1", new OpenApiInfo { Title = "simpleBlog.Api", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "simpleBlog.Api", Version = "v1" });
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     In = ParameterLocation.Header,
@@ -61,13 +63,6 @@ namespace simpleBlog.Api
             }).AddJwtBearer(cfg =>
             {
                 cfg.TokenValidationParameters = TokenValidationParameters;
-            });
-            services.AddAuthorization(cfg =>
-            {
-                cfg.AddPolicy("Admin", policy => policy.RequireClaim("type", "Admin"));
-                cfg.AddPolicy("Agent", policy => policy.RequireClaim("type", "Agent"));
-                cfg.AddPolicy("ClearanceLevel1", policy => policy.RequireClaim("ClearanceLevel", "1", "2"));
-                cfg.AddPolicy("ClearanceLevel2", policy => policy.RequireClaim("ClearanceLevel", "2"));
             });
         }
 

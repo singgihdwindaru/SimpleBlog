@@ -17,11 +17,11 @@ namespace simpleBlog.Api.BusinessLogic
 
         public async Task<List<UserModel.Response>> Authenticate(string username, string password)
         {
-            return await user.GetUser(username, password);
+            return await user.GetUserAsync(username, password);
         }
-        public bool InsertRequesterToken(UserModel.Response userModel)
+        public async Task<bool> InsertRequesterTokenAsync(UserModel.Response userModel)
         {
-            return user.Insert(userModel);
+            return await user.InsertAsync(userModel);
         }
     }
 }

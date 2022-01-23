@@ -1,0 +1,107 @@
+﻿@model simpleBlog.Ui.Models.Post
+
+@{
+    var isNew = string.IsNullOrEmpty(Model.title);
+    ViewData["Title"] = "Edit " + (Model.title ?? "new post");
+    //var host = Context.Request.Host.ToString();
+    //var allCats = ViewData[Constants.AllCats] as List<string> ?? new List<string>();
+    //var allTags = ViewData[Constants.AllTags] as List<string> ?? new List<string>();
+}
+
+@if (!isNew)
+{
+    <h1>Edit</h1>
+}
+else
+{
+    <h1> New Post</h1>
+}
+
+<form asp-controller="News" asp-action="Edit" id="edit">
+    <div class="col-10">
+        <hr />
+    </div>
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <input type="hidden" asp-for="@Model.id" />
+    <div class="form-group row">
+        <label asp-for="@Model.title" class="col-2 col-form-label">Title</label>
+        <div class="col-8">
+            <input class="form-control" asp-for="@Model.title" required placeholder="Title of blog post" aria-describedby="desc_title" />
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="@Model.Slug" class="col-2 col-form-label">Slug</label>
+        <div class="col-8">
+            <input class="form-control" asp-for="@Model.Slug" placeholder="The URL name" aria-describedby="desc_slug" />
+            <small class="form-text text-muted">The part of the URL that identifies this blog post</small>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="categories" class="col-2 col-form-label">Categories</label>
+        <div class="col-8">
+            <input class="form-control" type="text" name="selectcat" id="selectcat" aria-describedby="desc_categories" list="catlist" placeholder="@string.Join(", ", Model.categories)" />
+            <input type="text" name="categories" id="categories" value="@string.Join(", ", Model.categories)" hidden />
+            <small class="form-text text-muted">Select, or build a comma separated list of keywords - to remove double the keyword</small>
+            @*<datalist id="catlist">
+                    @foreach (var cat in allCats)
+                    {
+                        <option value="@cat" />
+                    }
+                </datalist>*@
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="tags" class="col-2 col-form-label">Tags</label>
+        <div class="col-8">
+            <input class="form-control" type="text" name="selecttag" id="selecttag" aria-describedby="desc_tags" list="taglist" placeholder="@string.Join(", ", Model.tags)" />
+            <input type="text" name="tags" id="tags" value="@string.Join(", ", Model.tags)" hidden />
+            <small class="form-text text-muted">Select, or build a comma separated list of keywords - to remove double the keyword</small>
+            @*<datalist id="taglist">
+                    @foreach (var tag in allTags)
+                    {
+                        <option value="@tag" />
+                    }
+
+                </datalist>*@
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="@Model.excerpt" class="col-2 col-form-label">Excerpt</label>
+        <div class="col-8">
+            <textarea class="form-control" asp-for="@Model.excerpt" cols="40" rows="5" placeholder="Short description of blog post" aria-describedby="desc_excerpt">@Model.excerpt</textarea>
+            <small class="form-text text-muted" id="desc_excerpt">A brief description of the content of the post</small>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="@Model.content" class="col-2 col-form-label">Content</label>
+        <div class="col-8">
+            <textarea style="height: 200px;" class="form-control" asp-for="@Model.content" aria-label="Content">@Model.content</textarea>
+            <small class="form-text text-muted" id="desc_excerpt">The content of the post</small>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="offset-2 col-8">
+            <button name="submit" type="submit" class="btn btn-primary">Submit</button>
+
+            <input asp-for="@Model.isPublished" />
+            <label asp-for="@Model.isPublished">Is published</label>
+            @if (!isNew)
+            {
+                <input type="submit" value="Delete..." class="btn btn-danger float-right" title="Delete the news..." asp-action="DeleteNews" asp-route-id="@Model.id" />
+
+            }
+        </div>
+
+    </div>
+
+</form>
+
+@*<div>
+        <a asp-action="Index">Back to List</a>
+    </div>*@
+
+@section Scripts {
+    <script src="/tinymce/tinymce.min.js"></script> @*with enabled CDN tinymce is not able to find some files*@
+    <script src="~/js/admin.js" async></script>
+}

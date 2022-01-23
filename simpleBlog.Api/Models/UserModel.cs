@@ -13,13 +13,14 @@ namespace simpleBlog.Api.Models.User
         public class Response
         {
             [JsonIgnore]
-            public Guid? id { get; set; }
+            public int id { get; set; }
             public string username { get; set; }
             public string fullname { get; set; }
             public bool? is_active { get; set; }
             public string token { get; set; }
             public string refresh_token { get; set; }
             public string role { get; set; }
+            public Guid? roleId { get; set; }
         }
 
     }
