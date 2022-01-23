@@ -9,9 +9,8 @@ namespace simpleBlog.Ui.Models
 {
     public class Post
     {
-        [Required]
-        public string id { get; set; } = DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture);
-        [Required]
+        public string id { get; set; } //= DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture);
+       
         public string reporterId { get; set; } = string.Empty;
         public IList<string> categories { get; } = new List<string>();
 
@@ -41,9 +40,9 @@ namespace simpleBlog.Ui.Models
         public bool AreCommentsOpen(int commentsCloseAfterDays) =>
             this.pubDate.AddDays(commentsCloseAfterDays) >= DateTime.UtcNow;
 
-        public string getEncodedLink() => $"/blog/{System.Net.WebUtility.UrlEncode(this.Slug)}/";
+        public string getEncodedLink() => $"/news/{System.Net.WebUtility.UrlEncode(this.Slug)}/";
 
-        public string getLink() => $"/blog/{this.Slug}/";
+        public string getLink() => $"/news/{this.Slug}/";
 
         public bool isVisible() => this.pubDate <= DateTime.UtcNow && this.isPublished;
 

@@ -74,7 +74,8 @@ namespace simpleBlog.Api.Controllers
                     {
                         var Claims = new List<Claim>
                         {
-                            new Claim("id", item.id.ToString())
+                            new Claim("id", item.id.ToString()),
+                            new Claim("roleId",item.roleId.ToString())
                         };
 
                         var Key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SXkSqsKyNUyvGbnHs7ke2NCq8zQzNLW7mPmHbnZZ"));

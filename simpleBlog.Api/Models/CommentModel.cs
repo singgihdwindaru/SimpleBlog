@@ -9,21 +9,21 @@ namespace simpleBlog.Api.Models
 {
     public class CommentModel
     {
-        [Required]
+        // [Required]
         public string Author { get; set; } = string.Empty;
 
-        [Required]
+        // [Required]
         public string Content { get; set; } = string.Empty;
 
-        [Required, EmailAddress]
+        // [Required, EmailAddress]
         public string Email { get; set; } = string.Empty;
 
-        [Required]
+        // [Required]
         public string ID { get; set; } = Guid.NewGuid().ToString();
 
         public bool IsAdmin { get; set; } = false;
 
-        [Required]
+        // [Required]
         public DateTime PubDate { get; set; } = DateTime.UtcNow;
 
         public string RenderContent() => this.Content;

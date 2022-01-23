@@ -23,9 +23,10 @@ namespace simpleBlog.Api.DataAccess
                 {
                     await pgConn.OpenAsync();
                     var sql = @"
-                    SELECT ur.id, u.username,u.is_active,r.role_name
-                    from user_roles ur
-                    inner join users u on u.id = ur.user_id
+                    SELECT u.id AS userId, u.username, u.is_active,ur.id AS roleId, r.role_name
+                    , u.name
+                    from users u 
+                    inner join user_roles ur on u.id = ur.user_id
                     inner join roles r on r.id = ur.role_id
                     where u.username=@username and u.password=@password";
                     NpgsqlCommand cmd = new NpgsqlCommand(sql, pgConn);
@@ -40,11 +41,12 @@ namespace simpleBlog.Api.DataAccess
                             while (await rdr.ReadAsync())
                             {
                                 UserModel.Response data = new UserModel.Response();
-                                data.id = rdr.GetGuid(0);
+                                data.id = rdr.GetInt32(0);
                                 data.username = rdr.GetString(1);
                                 data.is_active = rdr.GetBoolean(2);
-                                data.role = rdr.GetString(3);
-
+                                data.roleId = rdr.GetGuid(3);
+                                data.role = rdr.GetString(4);
+                                data.fullname = rdr.GetString(5);
                                 userModel.Add(data);
                             }
                         }

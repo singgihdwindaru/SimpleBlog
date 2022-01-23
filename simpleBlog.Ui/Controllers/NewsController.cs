@@ -6,6 +6,7 @@ using simpleBlog.Ui.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace simpleBlog.Ui.Controllers
@@ -25,12 +26,12 @@ namespace simpleBlog.Ui.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteNews(string id)
         {
-            var existing = await newsRepo.GetData(id);
+            var existing = await newsRepo.GetDataAsync(id);
             if (existing is null)
             {
                 return this.NotFound();
             }
-            await newsRepo.DeleteNews(id);
+            await newsRepo.DeleteNewsAsync(id);
             return Redirect("/");
         }
 
@@ -43,9 +44,37 @@ namespace simpleBlog.Ui.Controllers
             {
                 return this.View(new Post());
             }
-            var post = await newsRepo.GetData(id);
-            return post is null ? this.NotFound() : this.View(post);
+            var token = ((ClaimsIdentity)User.Identity).Claims.ToList()[3].Value.ToString().Replace("Token: ", string.Empty);
+            var post = await newsRepo.GetDataAsync(id, token);
+            return post is null ? this.NotFound() : this.View(post.FirstOrDefault());
         }
 
+        [HttpPost, Authorize, AutoValidateAntiforgeryToken]
+        public async Task<IActionResult> Edit(Post post)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                return this.View(nameof(Edit), post);
+            }
+
+            if (post is null)
+            {
+                throw new ArgumentNullException(nameof(post));
+            }
+            var token = ((ClaimsIdentity)User.Identity).Claims.ToList()[3].Value.ToString().Replace("Token: ", string.Empty);
+            string reporterName = ((ClaimsIdentity)User.Identity).Claims.ToList()[1].Value.ToString();
+            bool isSuccess = false;
+            if (string.IsNullOrEmpty(post.id))
+            {
+                isSuccess = await newsRepo.CreateNewsAsync(post, token, reporterName);
+            }
+            else
+            {
+                isSuccess = await newsRepo.UpdateNewsAsync(post, token, reporterName);
+            }
+
+            return this.Redirect(post.getEncodedLink());
+
+        }
     }
 }

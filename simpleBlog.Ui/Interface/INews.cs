@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace simpleBlog.Ui.Interface
 {
-    public interface INews<T>: IRepository<Post>
+    public interface INews<T>
     {
-        //IRepository<T> repository();
-        Task<IEnumerable<T>> CreateNews(params object[] id);
-        Task<IEnumerable<T>> UpdateNews(params object[] id);
-        Task<IEnumerable<T>> DeleteNews(params object[] id);
-        Task<IEnumerable<T>> GetNewsByCategories(params object[] id);
-        Task<IEnumerable<T>> GetNewsByTags(params object[] id);
+        Task<bool> CreateNewsAsync(params object[] id);
+        Task<bool> UpdateNewsAsync(params object[] id);
+        Task<bool> DeleteNewsAsync(params object[] id);
+        Task<IEnumerable<T>> GetNewsByCategoriesAsync(params object[] id);
+        Task<IEnumerable<T>> GetNewsByTagsAsync(params object[] id);
+        Task<IEnumerable<T>> GetDataAsync(params object[] id);
     }
 }

@@ -21,7 +21,7 @@ namespace simpleBlog.Api
             .UseWindowsService()
             .ConfigureWebHost(config =>
               {
-                  config.UseUrls("http://*:5005");
+                  config.UseUrls("http://*:5002");
  
               })
             .ConfigureWebHostDefaults(webBuilder =>

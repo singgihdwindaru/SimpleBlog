@@ -16,15 +16,28 @@ namespace simpleBlog.Api.BusinessLogic
         {
             news = new NewsDataAccess(AppSettings);
         }
-        public async Task<NewsModel> GetDataById(int idArticle)
+        public async Task<List<NewsModel>> GetDataById(int artikelId)
         {
-            var data = await news.GetDataAsync(EnumParam.byId, idArticle);
-            if (data != null)
-            {
-                return data.FirstOrDefault();
-            }
-            return new NewsModel();
+            var data = await news.GetDataAsync(EnumParam.byId, artikelId);
+            return data;
         }
+        public async Task<NewsModel> PostData(NewsModel newsModel)
+        {
+            bool result;
+            if (newsModel.artikelId! > -1)
+            {
+                result = await news.InsertAsync(newsModel);
+            }
+            else
+            {
+                result = await news.UpdateAsync(newsModel);
+            }
 
+            if (result == false)
+            {
+                return null;
+            }
+            return newsModel;
+        }
     }
 }

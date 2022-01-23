@@ -43,7 +43,6 @@ namespace simpleBlog.Ui.Controllers
                         new Claim(ClaimTypes.Role, dataUser.FirstOrDefault()?.role ?? string.Empty),
                         new Claim("token",dataUser.FirstOrDefault()?.token ?? string.Empty),
                         new Claim("refresh_token",dataUser.FirstOrDefault()?.refresh_token ?? string.Empty)
-                        //,new Claim(ClaimTypes.Role, "Admin")
                     };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

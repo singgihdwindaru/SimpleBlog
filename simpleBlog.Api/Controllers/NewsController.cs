@@ -23,9 +23,10 @@ namespace simpleBlog.Api.Controllers
             newsService = new NewsBusinessLogic(appSettings);
         }
         // GET: api/<NewsController>
-        [HttpGet]
+        [HttpPost]
+        [Route("[action]")]
         [Authorize]
-        public async Task<IActionResult> GetArticleById([FromBody] NewsModel artikel)
+        public async Task<IActionResult> GetArticleById([FromBody] NewsRequestModel request)
         {
             BaseModel<object> rspList = new BaseModel<object>();
             try
@@ -35,45 +36,63 @@ namespace simpleBlog.Api.Controllers
                 authHeader = authHeader.Replace("Bearer ", "");
                 var jsonToken = handler.ReadToken(authHeader);
                 var tokenS = handler.ReadToken(authHeader) as JwtSecurityToken;
-                var id = tokenS.Claims.First(claim => claim.Type == "id").Value;
+                var reporterId = tokenS.Claims.First(claim => claim.Type == "id").Value;
+                var roleId = tokenS.Claims.First(claim => claim.Type == "roleId").Value;
 
-                var data = await newsService.GetDataById(artikel.artikelId);
-                if (data.reporterId.ToString() == id)
+                var data = await newsService.GetDataById(request.artikelId);
+                if (data != null)
                 {
                     rspList.data = data;
+                    foreach (var item in data)
+                    {
+                        if (item.reporterId.ToString() != reporterId)
+                        {
+                            rspList.data = null;
+                            break;
+                        }
+                    }
+
                 }
+
             }
             catch (Exception ex)
             {
                 rspList.status = StatusEnum.error.ToString();
-                rspList.data = ex.Message;// Here is one return type
+                rspList.data = ex.Message;
             }
             return Ok(rspList);
         }
 
-        // GET api/<NewsController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [Route("[action]")]
+        [HttpPost, Authorize]
+        public async Task<IActionResult> PostNews([FromBody] NewsModel request)
         {
-            return "value";
-        }
+            BaseModel<object> rspList = new BaseModel<object>();
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+                string authHeader = Request.Headers["Authorization"];
+                authHeader = authHeader.Replace("Bearer ", "");
+                var jsonToken = handler.ReadToken(authHeader);
+                var tokenS = handler.ReadToken(authHeader) as JwtSecurityToken;
+                var reporterId = tokenS.Claims.First(claim => claim.Type == "id").Value;
+                var roleId = tokenS.Claims.First(claim => claim.Type == "roleId").Value;
+                
+                request.reporterId = Convert.ToInt32(reporterId);
+                var data = await newsService.PostData(request);
+                if (data == null)
+                {
+                    rspList.status = StatusEnum.fail.ToString();
+                }
 
-        // POST api/<NewsController>
-        // [HttpPost]
-        // public void Post([FromBody] string value)
-        // {
-        // }
-
-        // PUT api/<NewsController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<NewsController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+                rspList.data = request;
+            }
+            catch (System.Exception ex)
+            {
+                rspList.status = StatusEnum.error.ToString();
+                rspList.data = ex.Message;
+            }
+            return Ok(rspList);
         }
     }
 }

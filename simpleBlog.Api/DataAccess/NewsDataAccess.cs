@@ -20,14 +20,64 @@ namespace simpleBlog.Api.DataAccess
         {
             throw new NotImplementedException();
         }
-        public Task<bool> InsertAsync(NewsModel parameter)
+        public async Task<bool> InsertAsync(NewsModel parameter)
         {
-            throw new NotImplementedException();
+            bool isSucces = false;
+            try
+            {
+                using (NpgsqlConnection pgConn = new NpgsqlConnection(appSettings.connectionString))
+                {
+                    await pgConn.OpenAsync();
+                    var sql = @"
+                    INSERT INTO artikel (title, content, pub_date, author_id, status, excerpt, created_date, created_by)
+                    VAlUES (@title, @content, @pub_date, @author_id, @status, @excerpt, @created_date, @created_by)";
+                    NpgsqlCommand cmd = new NpgsqlCommand(sql, pgConn);
+                    cmd.Parameters.AddWithValue("@title", parameter.title);
+                    cmd.Parameters.AddWithValue("@content", parameter.content);
+                    cmd.Parameters.AddWithValue("@pub_date", parameter.pubDate);
+                    cmd.Parameters.AddWithValue("@author_id", parameter.reporterId);
+                    cmd.Parameters.AddWithValue("@status", parameter.isPublished ? 1 : 0);
+                    cmd.Parameters.AddWithValue("@excerpt", parameter.excerpt);
+                    cmd.Parameters.AddWithValue("@created_date", DateTime.Now);
+                    cmd.Parameters.AddWithValue("@created_by", parameter.reporterId);
+                    cmd.Prepare();
+                    if ((await cmd.ExecuteNonQueryAsync()) != -1)
+                    {
+                        isSucces = true;
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                //TODO : Write log
+            }
+            return isSucces;
         }
 
-        public Task<bool> UpdateAsync(NewsModel parameter)
+        public async Task<bool> UpdateAsync(NewsModel parameter)
         {
-            throw new NotImplementedException();
+            bool isSucces = false;
+            try
+            {
+                using (NpgsqlConnection pgConn = new NpgsqlConnection(appSettings.connectionString))
+                {
+                    await pgConn.OpenAsync();
+                    var sql = @"
+                    UPDATE artikel set";
+                    NpgsqlCommand cmd = new NpgsqlCommand(sql, pgConn);
+                    cmd.Parameters.AddWithValue("@artikelId", parameter.artikelId);
+                    cmd.Prepare();
+                    if ((await cmd.ExecuteNonQueryAsync()) != -1)
+                    {
+                        isSucces = true;
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                //TODO : Write log
+            }
+            return isSucces;
         }
         public async Task<List<NewsModel>> GetDataAsync(EnumParam enumParam, params object[] parameters)
         {
@@ -60,10 +110,10 @@ namespace simpleBlog.Api.DataAccess
                     var sql = @"
                     SELECT ar.id AS artikelId, ar.title, ar.content
                     , ar.pub_date AS publish_date
-                    , au.id AS reportedId, au.nama as reporterName, ar.status as isPublish, ar.excerpt
+                    , au.id AS reportedId, au.name as reporterName, ar.status as isPublish, ar.excerpt
                     , case when ar.updated_date is null then ar.created_date else ar.updated_date end AS lastModified
                     from artikel ar
-                    inner join author au on ar.author_id = au.id
+                    inner join users au on ar.author_id = au.id
                     where ar.id = @artikelId";
                     NpgsqlCommand cmd = new NpgsqlCommand(sql, pgConn);
                     cmd.Parameters.AddWithValue("@artikelId", artikelId);
@@ -85,7 +135,8 @@ namespace simpleBlog.Api.DataAccess
                                     reporterName = rdr.GetString(5),
                                     isPublished = Convert.ToBoolean(rdr.GetInt32(6)),
                                     excerpt = rdr.IsDBNull(7) ? string.Empty : rdr.GetString(7),
-                                    lastModified = rdr.IsDBNull(8) ? DateTime.MinValue : rdr.GetDateTime(8)
+                                    lastModified = rdr.IsDBNull(8) ? DateTime.MinValue : rdr.GetDateTime(8),
+
                                 };
 
                                 newsModels.Add(data);
