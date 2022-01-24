@@ -11,7 +11,6 @@ namespace simpleBlog.Api.BusinessLogic
     public class NewsBusinessLogic
     {
         INews<NewsModel> news;
-
         public NewsBusinessLogic(IAppSettings AppSettings)
         {
             news = new NewsDataAccess(AppSettings);
@@ -24,7 +23,7 @@ namespace simpleBlog.Api.BusinessLogic
         public async Task<NewsModel> PostData(NewsModel newsModel)
         {
             bool result;
-            if (newsModel.artikelId! > -1)
+            if (newsModel.artikelId! <= 0)
             {
                 result = await news.InsertAsync(newsModel);
             }
@@ -38,6 +37,19 @@ namespace simpleBlog.Api.BusinessLogic
                 return null;
             }
             return newsModel;
+        }
+        public async Task<List<NewsModel>> GetAll()
+        {
+            var data = await news.GetDataAsync(EnumParam.all, "");
+            return data;
+        }
+        public async Task<bool> DeleteData(NewsModel newsModel)
+        {
+            //NewsModel newsModel = new NewsModel();
+            //newsModel.artikelId = artikelId;
+            bool result = await news.DeleteAsync(newsModel);
+
+            return result;
         }
     }
 }

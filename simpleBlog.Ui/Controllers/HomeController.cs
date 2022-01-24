@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using simpleBlog.Ui.Interface;
+using simpleBlog.Ui.Models;
+using simpleBlog.Ui.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +12,17 @@ namespace simpleBlog.Ui.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private INews<Post> newsRepo;
+        public HomeController(IConfigUi config)
         {
-            return View();
+            newsRepo = new NewsRepository(config);
+        }
+        [AllowAnonymous]
+        public async Task<IActionResult> Index()
+        {
+            var post = await newsRepo.GetAllAsync();
+            post = post.Where(c => c.isPublished == true);
+            return View(post.ToList());
         }
     }
 }

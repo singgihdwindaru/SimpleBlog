@@ -7,6 +7,7 @@ namespace simpleBlog.Api.DataAccess
 {
     public enum EnumParam
     {
+        all,
         byId,
         byName,
         byIdAndName,

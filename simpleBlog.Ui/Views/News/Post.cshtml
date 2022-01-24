@@ -1,0 +1,41 @@
+﻿@model Post
+
+@{
+    ViewBag.Title = Model.title;
+
+}
+<style>
+    .card-title {
+        color: #000;
+    }
+
+    .card-link:hover {
+        color: #0366d6;
+    }
+</style>
+
+<input type="hidden" asp-for="@Model.artikelId" />
+<div class="card">
+    <div class="card-body">
+        <a class="card-link" asp-controller="news" asp-action="edit" asp-route-id="@Model.artikelId">
+            <h4 class="card-title">@Model.title</h4>
+        </a>
+        <h6 class="card-subtitle mb-2 text-muted">
+            @if (Model.isPublished)
+            {
+                <label>Published @Model.pubDate.ToShortDateString() By @Model.reporterName</label>
+            }
+            @if (User.Identity.IsAuthenticated && Model.reporterName == User.Identity.Name)
+            {
+                <a class="card-link" asp-controller="news" asp-action="edit" asp-route-id="@Model.artikelId">
+                    Edit News
+                </a>
+            }
+        </h6>
+        <p class="card-text">@Html.Raw(@Model.renderContent())</p>
+        <a href="#" class="card-link">Comment</a>
+        <a href="#" class="card-link">Tags</a>
+        <a href="#" class="card-link">Category</a>
+    </div>
+</div>
+

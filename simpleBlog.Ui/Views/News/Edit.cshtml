@@ -22,49 +22,14 @@ else
         <hr />
     </div>
     <div asp-validation-summary="All" class="text-danger"></div>
-    <input type="hidden" asp-for="@Model.id" />
+    <input type="hidden" asp-for="@Model.artikelId" id="hiddendArtikelId"/>
     <div class="form-group row">
         <label asp-for="@Model.title" class="col-2 col-form-label">Title</label>
         <div class="col-8">
             <input class="form-control" asp-for="@Model.title" required placeholder="Title of blog post" aria-describedby="desc_title" />
         </div>
     </div>
-    <div class="form-group row">
-        <label asp-for="@Model.Slug" class="col-2 col-form-label">Slug</label>
-        <div class="col-8">
-            <input class="form-control" asp-for="@Model.Slug" placeholder="The URL name" aria-describedby="desc_slug" />
-            <small class="form-text text-muted">The part of the URL that identifies this blog post</small>
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="categories" class="col-2 col-form-label">Categories</label>
-        <div class="col-8">
-            <input class="form-control" type="text" name="selectcat" id="selectcat" aria-describedby="desc_categories" list="catlist" placeholder="@string.Join(", ", Model.categories)" />
-            <input type="text" name="categories" id="categories" value="@string.Join(", ", Model.categories)" hidden />
-            <small class="form-text text-muted">Select, or build a comma separated list of keywords - to remove double the keyword</small>
-            @*<datalist id="catlist">
-                    @foreach (var cat in allCats)
-                    {
-                        <option value="@cat" />
-                    }
-                </datalist>*@
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="tags" class="col-2 col-form-label">Tags</label>
-        <div class="col-8">
-            <input class="form-control" type="text" name="selecttag" id="selecttag" aria-describedby="desc_tags" list="taglist" placeholder="@string.Join(", ", Model.tags)" />
-            <input type="text" name="tags" id="tags" value="@string.Join(", ", Model.tags)" hidden />
-            <small class="form-text text-muted">Select, or build a comma separated list of keywords - to remove double the keyword</small>
-            @*<datalist id="taglist">
-                    @foreach (var tag in allTags)
-                    {
-                        <option value="@tag" />
-                    }
-
-                </datalist>*@
-        </div>
-    </div>
+  
     <div class="form-group row">
         <label asp-for="@Model.excerpt" class="col-2 col-form-label">Excerpt</label>
         <div class="col-8">
@@ -88,7 +53,7 @@ else
             <label asp-for="@Model.isPublished">Is published</label>
             @if (!isNew)
             {
-                <input type="submit" value="Delete..." class="btn btn-danger float-right" title="Delete the news..." asp-action="DeleteNews" asp-route-id="@Model.id" />
+                <input type="submit" asp-controller="News" asp-action="Delete" asp-route-id="@Model.artikelId" class="btn btn-danger float-right" onclick="return ConfirmDelete();"/> 
 
             }
         </div>
@@ -97,11 +62,15 @@ else
 
 </form>
 
-@*<div>
-        <a asp-action="Index">Back to List</a>
-    </div>*@
-
 @section Scripts {
     <script src="/tinymce/tinymce.min.js"></script> @*with enabled CDN tinymce is not able to find some files*@
     <script src="~/js/admin.js" async></script>
+    <script type="text/javascript">
+        function ConfirmDelete() {
+            if (confirm("Are you sure to want to Delete?") == true)
+                return true;
+            else
+                return false;
+        }
+    </script>
 }

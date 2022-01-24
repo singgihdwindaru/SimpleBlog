@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Resources;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -30,15 +31,26 @@ namespace simpleBlog.Ui.Controllers
             return View();
         }
         [HttpPost("login")]
-        public async Task<IActionResult> LoginAsync(string username, string password, string returnUrl)
+        public async Task<IActionResult> LoginAsync(LoginModel.Request model, string returnUrl)
         {
+
             ViewData["returnUrl"] = returnUrl;
-            IEnumerable<LoginModel.Response> dataUser = await userRepo.GetData(username, password);
+
+            if (model.username is null || model.username is null)
+            {
+                this.ModelState.AddModelError(string.Empty, "Username Or Password Is Invalid");
+                return this.View(nameof(Login), model);
+            }
+            if (!this.ModelState.IsValid)
+            {
+                return this.View(nameof(Login), model);
+            }
+            IEnumerable<LoginModel.Response> dataUser = await userRepo.GetData(model.username, model.password);
             if (dataUser != null)
             {
                 var claims = new List<Claim>()
                     {
-                        new Claim(ClaimTypes.NameIdentifier,username),
+                        new Claim(ClaimTypes.NameIdentifier,model.username),
                         new Claim(ClaimTypes.Name, dataUser.FirstOrDefault()?.fullname ?? "Unknown User"),
                         new Claim(ClaimTypes.Role, dataUser.FirstOrDefault()?.role ?? string.Empty),
                         new Claim("token",dataUser.FirstOrDefault()?.token ?? string.Empty),

@@ -10,9 +10,9 @@ namespace simpleBlog.Api.BusinessLogic
     public class UserBusinessLogic
     {
         IUser user;
-        public UserBusinessLogic(IUser User)
+        public UserBusinessLogic(IAppSettings AppSettings)
         {
-            user = User;
+            user = new UserDataAccess(AppSettings);
         }
 
         public async Task<List<UserModel.Response>> Authenticate(string username, string password)
