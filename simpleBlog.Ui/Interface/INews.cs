@@ -13,6 +13,7 @@ namespace simpleBlog.Ui.Interface
         Task<bool> DeleteNewsAsync(params object[] id);
         Task<IEnumerable<T>> GetNewsByCategoriesAsync(params object[] id);
         Task<IEnumerable<T>> GetNewsByTagsAsync(params object[] id);
-        Task<IEnumerable<T>> GetDataAsync(params object[] id);
+        Task<IEnumerable<T>> GetDataByIdAsync(params object[] id);
+        Task<IEnumerable<T>> GetAllAsync();
     }
 }

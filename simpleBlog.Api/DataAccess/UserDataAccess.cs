@@ -55,7 +55,7 @@ namespace simpleBlog.Api.DataAccess
             }
             catch (System.Exception ex)
             {
-                //TODO : Write log
+              _ = ex.Message;
             }
 
             return userModel;

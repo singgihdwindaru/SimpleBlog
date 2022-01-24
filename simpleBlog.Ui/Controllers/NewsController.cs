@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace simpleBlog.Ui.Controllers
@@ -18,37 +19,46 @@ namespace simpleBlog.Ui.Controllers
         {
             newsRepo = new NewsRepository(config);
         }
-        public IActionResult Index()
+
+        [Route("/[controller]/MyPosts/")]
+        [HttpGet, Authorize]
+        public async Task<IActionResult> MyPosts()
         {
-            return View();
+            string reporterName = ((ClaimsIdentity)User.Identity).Claims.ToList()[1].Value.ToString();
+
+            var post = await newsRepo.GetAllAsync();
+            post = post.Where(c => c.reporterName.ToString() == reporterName);
+            return View(post);
         }
-        [Route("/[controller]/DeleteNews/{id}")]
-        [HttpPost]
-        public async Task<IActionResult> DeleteNews(string id)
+
+        [Route("/[controller]/Delete/{id}")]
+        [HttpPost, Authorize]
+        public async Task<IActionResult> Delete(string id)
         {
-            var existing = await newsRepo.GetDataAsync(id);
+            var existing = await newsRepo.GetDataByIdAsync(id);
             if (existing is null)
             {
                 return this.NotFound();
             }
-            await newsRepo.DeleteNewsAsync(id);
-            return Redirect("/");
+            var token = ((ClaimsIdentity)User.Identity).Claims.ToList()[3].Value.ToString().Replace("Token: ", string.Empty);
+
+            await newsRepo.DeleteNewsAsync(id, token);
+            return RedirectToAction("MyPosts");
         }
 
         [Route("/[controller]/edit/{id?}")]
-        [HttpGet]
+        [HttpGet, Authorize]
         public async Task<IActionResult> Edit(string id)
         {
-            //var categories = await newsRepo.GetData(id, reporterId);
             if (string.IsNullOrEmpty(id))
             {
                 return this.View(new Post());
             }
             var token = ((ClaimsIdentity)User.Identity).Claims.ToList()[3].Value.ToString().Replace("Token: ", string.Empty);
-            var post = await newsRepo.GetDataAsync(id, token);
+            var post = await newsRepo.GetDataByIdAsync(id, token);
             return post is null ? this.NotFound() : this.View(post.FirstOrDefault());
         }
-
+        [Route("/[controller]/edit/{id?}")]
         [HttpPost, Authorize, AutoValidateAntiforgeryToken]
         public async Task<IActionResult> Edit(Post post)
         {
@@ -64,7 +74,7 @@ namespace simpleBlog.Ui.Controllers
             var token = ((ClaimsIdentity)User.Identity).Claims.ToList()[3].Value.ToString().Replace("Token: ", string.Empty);
             string reporterName = ((ClaimsIdentity)User.Identity).Claims.ToList()[1].Value.ToString();
             bool isSuccess = false;
-            if (string.IsNullOrEmpty(post.id))
+            if (post.artikelId == null || post.artikelId <= 0)
             {
                 isSuccess = await newsRepo.CreateNewsAsync(post, token, reporterName);
             }
@@ -73,8 +83,15 @@ namespace simpleBlog.Ui.Controllers
                 isSuccess = await newsRepo.UpdateNewsAsync(post, token, reporterName);
             }
 
-            return this.Redirect(post.getEncodedLink());
+            return RedirectToAction("Post", new { artikelId = post.artikelId });
+        }
 
+        [Route("/[controller]/Post/{artikelId}")]
+        [HttpGet]
+        public async Task<IActionResult> Post(int artikelId)
+        {
+            var post = await newsRepo.GetDataByIdAsync(artikelId);
+            return post is null ? this.NotFound() : View("Post", post.FirstOrDefault());
         }
     }
 }

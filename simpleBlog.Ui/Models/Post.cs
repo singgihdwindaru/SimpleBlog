@@ -9,9 +9,10 @@ namespace simpleBlog.Ui.Models
 {
     public class Post
     {
-        public string id { get; set; } //= DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture);
-       
-        public string reporterId { get; set; } = string.Empty;
+        public int? artikelId { get; set; } = -1;
+
+        public int reporterId { get; set; } = -1;
+        public string reporterName { get; set; } = string.Empty;
         public IList<string> categories { get; } = new List<string>();
 
         public IList<string> tags { get; } = new List<string>();
@@ -36,16 +37,6 @@ namespace simpleBlog.Ui.Models
 
         [Required]
         public string title { get; set; } = string.Empty;
-
-        public bool AreCommentsOpen(int commentsCloseAfterDays) =>
-            this.pubDate.AddDays(commentsCloseAfterDays) >= DateTime.UtcNow;
-
-        public string getEncodedLink() => $"/news/{System.Net.WebUtility.UrlEncode(this.Slug)}/";
-
-        public string getLink() => $"/news/{this.Slug}/";
-
-        public bool isVisible() => this.pubDate <= DateTime.UtcNow && this.isPublished;
-
         public string renderContent()
         {
             var result = this.content;
@@ -69,33 +60,5 @@ namespace simpleBlog.Ui.Models
             return result;
         }
 
-        private static string RemoveDiacritics(string text)
-        {
-            var normalizedString = text.Normalize(NormalizationForm.FormD);
-            var stringBuilder = new StringBuilder();
-
-            foreach (var c in normalizedString)
-            {
-                var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
-                if (unicodeCategory != UnicodeCategory.NonSpacingMark)
-                {
-                    stringBuilder.Append(c);
-                }
-            }
-
-            return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
-        }
-
-        private static string RemoveReservedUrlCharacters(string text)
-        {
-            var reservedCharacters = new List<string> { "!", "#", "$", "&", "'", "(", ")", "*", ",", "/", ":", ";", "=", "?", "@", "[", "]", "\"", "%", ".", "<", ">", "\\", "^", "_", "'", "{", "}", "|", "~", "`", "+" };
-
-            foreach (var chr in reservedCharacters)
-            {
-                text = text.Replace(chr, string.Empty, StringComparison.OrdinalIgnoreCase);
-            }
-
-            return text;
-        }
     }
 }

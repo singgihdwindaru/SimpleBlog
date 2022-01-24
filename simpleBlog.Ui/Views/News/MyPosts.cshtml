@@ -1,0 +1,48 @@
+﻿@model IEnumerable<Post>
+@{
+    ViewBag.Title = "Simple Blog";
+}
+@if (Model == null || Model.ToList().Count == 0)
+{
+    <h4>Blog empty</h4>
+}
+else
+{
+    <style>
+        .card-title {
+            color: #000;
+        }
+
+        .card-link:hover {
+            color: #0366d6;
+        }
+    </style>
+    @foreach (var item in Model.ToList())
+    {
+        <input type="hidden" asp-for="@item.artikelId" />
+        <div class="card">
+            <div class="card-body">
+                <a class="card-link" asp-action="Post" asp-controller="News" asp-route-id="@item.artikelId.Value">
+                    <h4 class="card-title">@item.title</h4>
+                </a>
+                <h6 class="card-subtitle mb-2 text-muted">
+                    @if (item.isPublished)
+                    {
+                        <label>Published @item.pubDate.ToShortDateString() By @item.reporterName</label>
+                    }
+                    @if (User.Identity.IsAuthenticated && item.reporterName == User.Identity.Name)
+                    {
+                        <a class="card-link" asp-controller="news" asp-action="edit" asp-route-id="@item.artikelId">
+                            Edit News
+                        </a>
+                    }
+                </h6>
+                <p class="card-text">@item.excerpt</p>
+                <a href="#" class="card-link">Comment</a>
+                <a href="#" class="card-link">Tags</a>
+                <a href="#" class="card-link">Category</a>
+            </div>
+        </div>
+    }
+
+}
