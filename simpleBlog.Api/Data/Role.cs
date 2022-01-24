@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 #nullable disable
 
-namespace simpleBlog.Api.Data
+namespace simpleBlog.Api.data
 {
     public partial class Role
     {
