@@ -3,25 +3,28 @@ using System.Collections.Generic;
 
 #nullable disable
 
-namespace simpleBlog.Api.Data
+namespace simpleBlog.Api.data
 {
     public partial class User
     {
         public User()
         {
+            Artikels = new HashSet<Artikel>();
             UserRoles = new HashSet<UserRole>();
         }
 
-        public long Id { get; set; }
+        public int Id { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
         public bool IsActive { get; set; }
         public string Email { get; set; }
-        public DateTime? Createddate { get; set; }
-        public string Createdby { get; set; }
-        public DateTime Updateddate { get; set; }
-        public string Updatedby { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTime UpdatedDate { get; set; }
+        public string UpdatedBy { get; set; }
+        public string Name { get; set; }
 
+        public virtual ICollection<Artikel> Artikels { get; set; }
         public virtual ICollection<UserRole> UserRoles { get; set; }
     }
 }

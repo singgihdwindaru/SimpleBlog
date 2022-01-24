@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using simpleBlog.Api.Data;
+using simpleBlog.Api.data;
 
-namespace simpleBlog.Api.Data.Migrations
+namespace simpleBlog.Api.data.migrations
 {
-    [DbContext(typeof(AppDbContext))]
-    [Migration("20220120115123_InitialCreate")]
-    partial class InitialCreate
+    [DbContext(typeof(SimpleBlogContext))]
+    [Migration("20220124061743_InitDatabase")]
+    partial class InitDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,7 +23,64 @@ namespace simpleBlog.Api.Data.Migrations
                 .HasAnnotation("ProductVersion", "5.0.13")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-            modelBuilder.Entity("simpleBlog.Api.Data.Role", b =>
+            modelBuilder.Entity("simpleBlog.Api.data.Artikel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id")
+                        .HasIdentityOptions(6L, null, null, null, null, null)
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn);
+
+                    b.Property<int?>("AuthorId")
+                        .HasColumnType("integer")
+                        .HasColumnName("author_id");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("text")
+                        .HasColumnName("content");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("character varying")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_date");
+
+                    b.Property<string>("Excerpt")
+                        .HasColumnType("text")
+                        .HasColumnName("excerpt");
+
+                    b.Property<DateTime?>("PubDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("pub_date");
+
+                    b.Property<int?>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnName("title");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("character varying")
+                        .HasColumnName("updated_by");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_date");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex(new[] { "AuthorId" }, "fki_fk_artikel_user");
+
+                    b.ToTable("artikel");
+                });
+
+            modelBuilder.Entity("simpleBlog.Api.data.Role", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -69,22 +126,39 @@ namespace simpleBlog.Api.Data.Migrations
                     b.ToTable("roles");
                 });
 
-            modelBuilder.Entity("simpleBlog.Api.Data.User", b =>
+            modelBuilder.Entity("simpleBlog.Api.data.Status", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<int>("Id")
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Nama")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("nama");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("status");
+                });
+
+            modelBuilder.Entity("simpleBlog.Api.data.User", b =>
+                {
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("integer")
                         .HasColumnName("id")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn);
 
-                    b.Property<string>("Createdby")
+                    b.Property<string>("CreatedBy")
                         .HasColumnType("character varying")
-                        .HasColumnName("createdby");
+                        .HasColumnName("created_by");
 
-                    b.Property<DateTime?>("Createddate")
+                    b.Property<DateTime?>("CreatedDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
-                        .HasColumnName("createddate")
+                        .HasColumnName("created_date")
                         .HasDefaultValueSql("now()");
 
                     b.Property<string>("Email")
@@ -95,19 +169,23 @@ namespace simpleBlog.Api.Data.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_active");
 
+                    b.Property<string>("Name")
+                        .HasColumnType("character varying")
+                        .HasColumnName("name");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("password");
 
-                    b.Property<string>("Updatedby")
+                    b.Property<string>("UpdatedBy")
                         .HasColumnType("character varying")
-                        .HasColumnName("updatedby");
+                        .HasColumnName("updated_by");
 
-                    b.Property<DateTime>("Updateddate")
+                    b.Property<DateTime>("UpdatedDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
-                        .HasColumnName("updateddate")
+                        .HasColumnName("updated_date")
                         .HasDefaultValueSql("now()");
 
                     b.Property<string>("Username")
@@ -120,7 +198,7 @@ namespace simpleBlog.Api.Data.Migrations
                     b.ToTable("users");
                 });
 
-            modelBuilder.Entity("simpleBlog.Api.Data.UserRole", b =>
+            modelBuilder.Entity("simpleBlog.Api.data.UserRole", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -132,8 +210,8 @@ namespace simpleBlog.Api.Data.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("role_id");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint")
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
                         .HasColumnName("user_id");
 
                     b.HasKey("Id");
@@ -145,15 +223,32 @@ namespace simpleBlog.Api.Data.Migrations
                     b.ToTable("user_roles");
                 });
 
-            modelBuilder.Entity("simpleBlog.Api.Data.UserRole", b =>
+            modelBuilder.Entity("simpleBlog.Api.data.Artikel", b =>
                 {
-                    b.HasOne("simpleBlog.Api.Data.Role", "Role")
+                    b.HasOne("simpleBlog.Api.data.Status", "Author")
+                        .WithMany("Artikels")
+                        .HasForeignKey("AuthorId")
+                        .HasConstraintName("fk_artikel_status");
+
+                    b.HasOne("simpleBlog.Api.data.User", "AuthorNavigation")
+                        .WithMany("Artikels")
+                        .HasForeignKey("AuthorId")
+                        .HasConstraintName("fk_artikel_user");
+
+                    b.Navigation("Author");
+
+                    b.Navigation("AuthorNavigation");
+                });
+
+            modelBuilder.Entity("simpleBlog.Api.data.UserRole", b =>
+                {
+                    b.HasOne("simpleBlog.Api.data.Role", "Role")
                         .WithMany("UserRoles")
                         .HasForeignKey("RoleId")
                         .HasConstraintName("userrole_fkroleid")
                         .IsRequired();
 
-                    b.HasOne("simpleBlog.Api.Data.User", "User")
+                    b.HasOne("simpleBlog.Api.data.User", "User")
                         .WithMany("UserRoles")
                         .HasForeignKey("UserId")
                         .HasConstraintName("userrole_fkUserid")
@@ -164,13 +259,20 @@ namespace simpleBlog.Api.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("simpleBlog.Api.Data.Role", b =>
+            modelBuilder.Entity("simpleBlog.Api.data.Role", b =>
                 {
                     b.Navigation("UserRoles");
                 });
 
-            modelBuilder.Entity("simpleBlog.Api.Data.User", b =>
+            modelBuilder.Entity("simpleBlog.Api.data.Status", b =>
                 {
+                    b.Navigation("Artikels");
+                });
+
+            modelBuilder.Entity("simpleBlog.Api.data.User", b =>
+                {
+                    b.Navigation("Artikels");
+
                     b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618

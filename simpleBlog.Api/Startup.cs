@@ -9,8 +9,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Text;
-using simpleBlog.Api.Data;
 using simpleBlog.Api.Interfaces;
+using simpleBlog.Api.data;
 
 namespace simpleBlog.Api
 {
@@ -26,10 +26,8 @@ namespace simpleBlog.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {   
-            services.AddMvc().AddXmlSerializerFormatters();  
-            services.AddDbContext<AppDbContext>();
+            services.AddDbContext<SimpleBlogContext>();
             services.AddSingleton<IAppSettings, ConfigurationApi>();
-
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
