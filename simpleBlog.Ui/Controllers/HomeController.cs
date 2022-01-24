@@ -21,7 +21,10 @@ namespace simpleBlog.Ui.Controllers
         public async Task<IActionResult> Index()
         {
             var post = await newsRepo.GetAllAsync();
-            post = post.Where(c => c.isPublished == true);
+            if (post != null)
+            {
+                post = post.Where(c => c.isPublished == true);
+            }
             return View(post.ToList());
         }
     }

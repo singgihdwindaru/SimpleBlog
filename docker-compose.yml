@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:13
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Password1!
+      - POSTGRES_DB=SimpleBlog
+    volumes: 
+      - ./pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  api:
+    build:
+      context: .
+      dockerfile: simpleBlog.Api\Dockerfile
+    image: simple-blog-api
+    depends_on:
+      - db
+    ports:
+      - "5002:5002"
+  web:
+    build:
+      context: .
+      dockerfile: simpleBlog.Ui\Dockerfile
+    image: simple-blog-ui
+    depends_on:
+      - api
+    ports:
+      - "5003:5003"

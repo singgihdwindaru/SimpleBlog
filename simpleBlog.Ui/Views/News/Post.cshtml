@@ -17,9 +17,7 @@
 <input type="hidden" asp-for="@Model.artikelId" />
 <div class="card">
     <div class="card-body">
-        <a class="card-link" asp-controller="news" asp-action="edit" asp-route-id="@Model.artikelId">
-            <h4 class="card-title">@Model.title</h4>
-        </a>
+        <h4 class="card-title">@Model.title</h4>
         <h6 class="card-subtitle mb-2 text-muted">
             @if (Model.isPublished)
             {
